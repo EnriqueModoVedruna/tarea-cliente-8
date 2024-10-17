@@ -1,19 +1,62 @@
-const cursos = document.getElementById('lista-cursos');
+const carrito = [];
+const listaCarrito = document.querySelector('#lista-carrito tbody');
+const vaciarCarritoBtn = document.querySelector('#vaciar-carrito');
 
-const carrito = document.getElementById('carrito');
+// Agregar producto al carrito
+function agregarProducto(producto) {
+    carrito.push(producto);
+    mostrarCarrito();
+}
 
-const carta = document.getElementById('card');
+// Mostrar carrito en el HTML
+function mostrarCarrito() {
+    // Limpiar HTML previo
+    listaCarrito.innerHTML = '';
 
-const agregar = document.getElementById('agregar-carrito');
+    // Generar HTML para cada producto en el carrito
+    carrito.forEach((producto, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td><img src="${producto.imagen}" width="100"></td>
+            <td>${producto.nombre}</td>
+            <td>${producto.precio}</td>
+            <td>${producto.cantidad}</td>
+            <td>
+                <a href="#" class="borrar-producto" data-index="${index}">X</a>
+            </td>
+        `;
+        listaCarrito.appendChild(row);
+    });
 
-const vaciar = document.getElementById('vaciar-carrito');
+    // Añadir funcionalidad de eliminar productos
+    document.querySelectorAll('.borrar-producto').forEach(boton => {
+        boton.addEventListener('click', eliminarProducto);
+    });
+}
 
-let arr = [];
+// Eliminar producto del carrito
+function eliminarProducto(event) {
+    const index = event.target.getAttribute('data-index');
+    carrito.splice(index, 1);
+    mostrarCarrito();
+}
 
-agregar.addEventListener('click', function(){
-    arr = arr + carta.img, carta.h4, carta.className('precio');
-})
+// Vaciar carrito
+vaciarCarritoBtn.addEventListener('click', () => {
+    carrito.length = 0; // Limpia el array
+    mostrarCarrito(); // Actualiza el HTML
+});
 
-vaciar.addEventListener('click', function() {
-    arr = [];
+// Ejemplo de producto
+document.querySelectorAll('.agregar-carrito').forEach(boton => {
+    boton.addEventListener('click', (e) => {
+        const card = e.target.closest('.card');
+        const producto = {
+            imagen: card.querySelector('img').src,
+            nombre: e.target.parentElement.querySelector('h4').textContent,
+            precio: e.target.parentElement.querySelector('.precio span').textContent,
+            cantidad: 1
+        };
+        agregarProducto(producto);
+    });
 });
